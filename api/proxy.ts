@@ -6,7 +6,7 @@ export default async function handler(req: Request) {
   const url = new URL(req.url);
 
   const backendUrl =
-    "http://v.tribalxsya.ggff.net:8443" +
+    "https://za.itachigoat.co.za" +
     url.pathname +
     url.search;
 
