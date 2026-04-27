@@ -17,7 +17,7 @@ export default async function handler(req: Request) {
   headers.delete("host");
   headers.delete("connection");
   headers.delete("content-length");
-  headers.delete("accept-encoding"); // IMPORTANT for raw streaming speed
+  headers.delete("accept-encoding");
 
   const upstream = await fetch(backendUrl, {
     method: req.method,
@@ -29,10 +29,14 @@ export default async function handler(req: Request) {
     redirect: "manual",
   });
 
-  // Force no buffering / no caching
+  // Keep all upstream headers
   const responseHeaders = new Headers(upstream.headers);
+
+  // Remove ONLY x-accel-buffering if present
+  responseHeaders.delete("x-accel-buffering");
+
+  // Keep your other headers
   responseHeaders.set("cache-control", "no-store");
-  responseHeaders.set("x-accel-buffering", "no"); // respected by some proxies
   responseHeaders.set("connection", "keep-alive");
 
   return new Response(upstream.body, {
